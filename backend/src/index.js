@@ -1,66 +1,72 @@
 const { ApolloServer, gql } = require('apollo-server');
+const movies = require('./mocks/movies.json');
+const categories = require('./mocks/categories');
 
-// This is a (sample) collection of books we'll be able to query
-// the GraphQL server for.  A more complete example might fetch
-// from an existing data source like a REST API or database.
-const authors = [
-  {
-    name: 'Todd Motto'
-  },
-  {
-    name: 'Henry Anna'
-  }
-];
+const { originalUrl } = require('./helpers/urls');
 
-const books = [
-  {
-    title: 'Harry Potter and the Chamber of Secrets',
-    author: { name: 'J.K. Rowling' }
-  },
-  {
-    title: 'Jurassic Park',
-    author: { name: 'Michael Crichton' }
-  }
-];
-
-// Type definitions define the "shape" of your data and specify
-// which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
   # Comments in GraphQL are defined with the hash (#) symbol.
 
   # This "Book" type can be used in other type declarations.
-  type Book {
+  type Movie {
     title: String
-    author: Author
+    vote_count: String
+    id: Int
+    video: String
+    vote_average: String
+    popularity: String
+    poster_path: String
+    original_language: String
+    original_title: String
+    genre_ids: [Int]
+    backdrop_path: String
+    adult: String
+    overview: String
+    release_date: String
   }
-  type Author {
+  type Category {
     name: String
   }
-
   # The "Query" type is the root of all GraphQL queries.
   # (A "Mutation" type will be covered later on.)
   type Query {
-    getBooks: [Book]
-    getAuthors: [Author]
+    getMovies: [Movie]
+    getCategories: [Category]
+  }
+
+  type Mutation {
+    changeTitle(title: 'an'){
+      __typename
+    ... on Human {
+      name
+    }
+    ... on Droid {
+      name
+    }
+    ... on Starship {
+      name
+    }
+
+    }
   }
 `;
 
-// Resolvers define the technique for fetching the types in the
-// schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    getBooks: () => books,
-    getAuthors: () => authors
+    getCategories() {
+      return categories;
+    },
+    getMovies() {
+      return movies.map(movie => ({
+        ...movie,
+        poster_path: originalUrl + movie.poster_path
+      }));
+    }
   }
 };
 
-// In the most basic sense, the ApolloServer can be started
-// by passing type definitions (typeDefs) and the resolvers
-// responsible for fetching the data for those types.
 const server = new ApolloServer({ typeDefs, resolvers });
 
-// This `listen` method launches a web-server.  Existing apps
-// can utilize middleware options, which we'll discuss later.
 server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
 });
