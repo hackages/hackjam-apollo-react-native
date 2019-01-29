@@ -33,22 +33,6 @@ const typeDefs = gql`
     getMovies: [Movie]
     getCategories: [Category]
   }
-
-  type Mutation {
-    changeTitle(title: 'an'){
-      __typename
-    ... on Human {
-      name
-    }
-    ... on Droid {
-      name
-    }
-    ... on Starship {
-      name
-    }
-
-    }
-  }
 `;
 
 const resolvers = {
@@ -65,7 +49,16 @@ const resolvers = {
   }
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  cors: false,
+  playground: {
+    settings: {
+      'editor.theme': 'light'
+    }
+  }
+});
 
 server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
