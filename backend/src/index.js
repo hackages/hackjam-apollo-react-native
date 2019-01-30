@@ -2,12 +2,9 @@ const { ApolloServer, gql } = require('apollo-server');
 const movies = require('./mocks/movies.json');
 const categories = require('./mocks/categories');
 
-const { originalUrl } = require('./helpers/urls');
+const { PICTURES_CDN_URL } = require('./helpers/urls');
 
 const typeDefs = gql`
-  # Comments in GraphQL are defined with the hash (#) symbol.
-
-  # This "Book" type can be used in other type declarations.
   type Movie {
     title: String
     vote_count: String
@@ -24,11 +21,11 @@ const typeDefs = gql`
     overview: String
     release_date: String
   }
+
   type Category {
     name: String
   }
-  # The "Query" type is the root of all GraphQL queries.
-  # (A "Mutation" type will be covered later on.)
+
   type Query {
     getMovies: [Movie]
     getCategories: [Category]
@@ -43,7 +40,7 @@ const resolvers = {
     getMovies() {
       return movies.map(movie => ({
         ...movie,
-        poster_path: originalUrl + movie.poster_path
+        poster_path: PICTURES_CDN_URL + movie.poster_path
       }));
     }
   }
@@ -52,7 +49,7 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  cors: false,
+  cors: true,
   playground: {
     settings: {
       'editor.theme': 'light'
