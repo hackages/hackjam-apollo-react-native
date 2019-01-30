@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { Keyboard, Text, Image, TextInput, View, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as Animatable from 'react-native-animatable';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 import { styles } from './movies.styles';
 
 class MovieList extends Component {
@@ -44,15 +42,10 @@ class MovieList extends Component {
   };
 
   search = text => {
-    const movies = this.props.data.getMovies.filter(movie =>
-      movie.title.toLowerCase().includes(text.toLowerCase())
-    );
-    this.setState({ movies });
+    // Search movies by name and category
   };
 
   render() {
-    const movies = this.state.movies || this.props.data.getMovies;
-    console.log(movies);
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -83,58 +76,19 @@ class MovieList extends Component {
             />
           </Animatable.View>
         </View>
-        {movies ? (
-          <FlatList
-            style={{
-              backgroundColor: this.state.searchBarFocused
-                ? 'rgba(0,0,0,0.3)'
-                : 'white'
-            }}
-            data={movies}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={({ item: movie, index }) => (
-              <View
-                style={{
-                  height: 120,
-                  padding: 4,
-                  flex: 1,
-                  backgroundColor: index % 2 ? 'white' : 'lightblue',
-                  flexDirection: 'row'
-                }}
-              >
-                <Image
-                  style={{ height: 100, width: 80 }}
-                  source={{ uri: movie.poster_path }}
-                />
-                <Animatable.Text
-                  animation="flipInY"
-                  style={{
-                    fontSize: 16,
-                    marginLeft: 5,
-                    fontWeight: 'bold',
-                    alignSelf: 'center'
-                  }}
-                >
-                  {movie.title}
-                </Animatable.Text>
-              </View>
-            )}
-          />
-        ) : (
-          <View>
-            <Text>Loading...</Text>
-          </View>
-        )}
+        <FlatList
+          style={{
+            backgroundColor: this.state.searchBarFocused
+              ? 'rgba(0,0,0,0.3)'
+              : 'white'
+          }}
+          data={[]}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item, index }) => null}
+        />
       </View>
     );
   }
 }
 
-export default graphql(gql`
-  query {
-    getMovies {
-      title
-      poster_path
-    }
-  }
-`)(MovieList);
+export default MovieList;
